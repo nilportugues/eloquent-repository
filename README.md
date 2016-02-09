@@ -1,3 +1,3 @@
 # Eloquent Repository
 
-Eloquent Repository to be used with **[nilportugues/repository](https://github.com/nilportugues/php-repository)**.
+Eloquent Repository using *[nilportugues/repository](https://github.com/nilportugues/php-repository)* as foundation.
