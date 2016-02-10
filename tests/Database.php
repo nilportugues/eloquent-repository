@@ -3,8 +3,8 @@
 namespace NilPortugues\Tests\Foundation;
 
 use DateTime;
-use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 class Database
 {
@@ -14,8 +14,8 @@ class Database
         // Create database
         //----------------------------------------------------------------------------------
 
-        Capsule::schema('default')->dropIfExists('clients');
-        Capsule::schema('default')->create('clients', function (Blueprint $table) {
+        Capsule::schema()->dropIfExists('clients');
+        Capsule::schema()->create('clients', function (Blueprint $table) {
             $table->string('name', 255);
             $table->dateTime('date');
             $table->integer('totalOrders');
@@ -25,13 +25,12 @@ class Database
             $table->timestamps();
         });
 
-        Capsule::schema('default')->dropIfExists('client_orders');
-        Capsule::schema('default')->create('client_orders', function (Blueprint $table) {
+        Capsule::schema()->dropIfExists('client_orders');
+        Capsule::schema()->create('client_orders', function (Blueprint $table) {
             $table->integer('client_id');
             $table->dateTime('date');
             $table->timestamps();
         });
-
         //----------------------------------------------------------------------------------
 
         $client1 = new Clients();
@@ -141,5 +140,11 @@ class Database
         $clientOrders4->client_id = $client4->id();
         $clientOrders4->date = (new DateTime('2002-07-15'))->format('Y-m-d H:i:s');
         $clientOrders4->save();
+    }
+
+    public static function dropAll()
+    {
+        Capsule::schema()->drop('clients');
+        Capsule::schema()->drop('client_orders');
     }
 }

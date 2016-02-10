@@ -20,7 +20,7 @@ trait IdentityTrait
      */
     public function id()
     {
-        return ($this->primaryKey) ? $this->primaryKey : 'id';
+        return (string) $this->id;
     }
 
     /**
@@ -28,6 +28,6 @@ trait IdentityTrait
      */
     public function __toString()
     {
-        return (string) $this->id();
+        return $this->id();
     }
 }

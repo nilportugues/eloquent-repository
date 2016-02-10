@@ -11,8 +11,6 @@
 namespace NilPortugues\Foundation\Infrastructure\Model\Repository\Eloquent;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use NilPortugues\Assert\Assert;
 use NilPortugues\Foundation\Domain\Model\Repository\Contracts\Fields;
 use NilPortugues\Foundation\Domain\Model\Repository\Contracts\Filter;
@@ -46,7 +44,7 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
         $model = $this->getModelInstance();
         $columns = ($fields) ? $fields->get() : ['*'];
 
-        return $model->query()->where($model->getKeyName(), '=', $id->id())->get($columns)->toArray();
+        return $model->query()->where($model->getKeyName(), '=', $id->id())->get($columns)->first();
     }
 
     /**
@@ -61,17 +59,18 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
     public function findBy(Filter $filter = null, Sort $sort = null, Fields $fields = null)
     {
         $model = $this->getModelInstance();
+        $query = $model->query();
         $columns = ($fields) ? $fields->get() : ['*'];
 
         if ($filter) {
-            EloquentFilter::filter($model->query(), $filter);
+            EloquentFilter::filter($query, $filter);
         }
 
         if ($sort) {
-            EloquentSorter::sort($model->query(), $sort);
+            EloquentSorter::sort($query, $sort);
         }
 
-        return $model->all($columns)->toArray();
+        return $query->get($columns)->toArray();
     }
 
     /**
@@ -125,12 +124,13 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
     public function count(Filter $filter = null)
     {
         $model = $this->getModelInstance();
+        $query = $model->query();
 
         if ($filter) {
-            EloquentFilter::filter($model->query(), $filter);
+            EloquentFilter::filter($query, $filter);
         }
 
-        return (int) $model->query()->getQuery()->count();
+        return (int) $query->getQuery()->count();
     }
 
     /**
@@ -169,16 +169,17 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
      */
     public function addAll(array $values)
     {
+        $model = $this->getModelInstance();
+
         try {
-            $columns = Schema::getColumnListing($this->getModelInstance()->getTable());
-            DB::beginTransaction();
+            $model->getConnection()->beginTransaction();
             foreach ($values as $value) {
                 $this->guard($value);
-                $value->fillable($columns)->save();
+                $value->save();
             }
-            DB::commit();
+            $model->getConnection()->commit();
         } catch (\Exception $e) {
-            DB::rollback();
+            $model->getConnection()->rollback();
             throw $e;
         }
     }
@@ -208,12 +209,13 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
     public function removeAll(Filter $filter = null)
     {
         $model = $this->getModelInstance();
+        $query = $model->query();
 
         if ($filter) {
-            EloquentFilter::filter($model->query(), $filter);
+            EloquentFilter::filter($query, $filter);
         }
 
-        return (bool) $model->delete();
+        return $query->delete();
     }
 
     /**
@@ -226,25 +228,35 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
     public function findAll(Pageable $pageable = null)
     {
         $model = $this->getModelInstance();
+        $query = $model->query();
 
-        $fields = $pageable->fields();
-        $columns = ($fields) ? $fields->get() : ['*'];
+        if ($pageable) {
+            $fields = $pageable->fields();
+            $columns = ($fields) ? $fields->get() : ['*'];
 
-        $filter = $pageable->filters();
-        if ($filter) {
-            EloquentFilter::filter($model->query(), $filter);
-        }
+            $filter = $pageable->filters();
+            if ($filter) {
+                EloquentFilter::filter($query, $filter);
+            }
 
-        $sort = $pageable->sortings();
-        if ($sort) {
-            EloquentSorter::sort($model->query(), $sort);
+            $sort = $pageable->sortings();
+            if ($sort) {
+                EloquentSorter::sort($query, $sort);
+            }
+
+            return new ResultPage(
+                $query->paginate($pageable->pageSize(), $columns, 'page', $pageable->pageNumber())->items(),
+                $query->paginate()->total(),
+                $pageable->pageNumber(),
+                ceil($query->paginate()->total() / $pageable->pageSize())
+            );
         }
 
         return new ResultPage(
-            $model->query()->paginate($pageable->pageSize(), $columns, 'page', $pageable->pageNumber())->items(),
-            $model->query()->paginate()->total(),
-            $pageable->pageNumber(),
-            ceil($model->query()->paginate()->total() / $pageable->pageSize())
+            $query->paginate($query->paginate()->total(), ['*'], 'page', 1)->items(),
+            $query->paginate()->total(),
+            1,
+            1
         );
     }
 }
