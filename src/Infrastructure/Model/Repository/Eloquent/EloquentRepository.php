@@ -43,12 +43,14 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
      */
     public function find(Identity $id, Fields $fields = null)
     {
-        $filter = new DomainFilter();
-        $filter->must()->equals($id->getKeyName(), $id->id());
+        $model = $this->getModelInstance();
 
-        $result = $this->findBy($filter, null, $fields);
+        $columns = ['*'];
+        if ($fields) {
+            $columns = $fields->get();
+        }
 
-        return array_pop($result);
+        return $model->query()->where($model->getKeyName(), '=', $id->id())->get($columns);
     }
 
     /**
@@ -64,7 +66,7 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
     {
         $model = $this->getModelInstance();
 
-        $columns = '*';
+        $columns = ['*'];
         if ($fields) {
             $columns = $fields->get();
         }

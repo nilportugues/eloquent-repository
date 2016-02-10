@@ -16,11 +16,6 @@ namespace NilPortugues\Foundation\Infrastructure\Model\Repository\Eloquent;
 trait IdentityTrait
 {
     /**
-     * @var string
-     */
-    protected $primaryKey;
-
-    /**
      * @return string
      */
     public function id()
