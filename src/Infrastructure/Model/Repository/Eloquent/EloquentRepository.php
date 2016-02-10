@@ -39,18 +39,14 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
      * @param Identity|Model $id
      * @param Fields|null    $fields
      *
-     * @return mixed
+     * @return array
      */
     public function find(Identity $id, Fields $fields = null)
     {
         $model = $this->getModelInstance();
+        $columns = ($fields) ? $fields->get() : ['*'];
 
-        $columns = ['*'];
-        if ($fields) {
-            $columns = $fields->get();
-        }
-
-        return $model->query()->where($model->getKeyName(), '=', $id->id())->get($columns);
+        return $model->query()->where($model->getKeyName(), '=', $id->id())->get($columns)->toArray();
     }
 
     /**
@@ -65,11 +61,7 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
     public function findBy(Filter $filter = null, Sort $sort = null, Fields $fields = null)
     {
         $model = $this->getModelInstance();
-
-        $columns = ['*'];
-        if ($fields) {
-            $columns = $fields->get();
-        }
+        $columns = ($fields) ? $fields->get() : ['*'];
 
         if ($filter) {
             EloquentFilter::filter($model->query(), $filter);
@@ -115,8 +107,10 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
      */
     public function exists(Identity $id)
     {
+        $model = $this->getModelInstance();
+
         $filter = new DomainFilter();
-        $filter->must()->equals($id->getKeyName(), $id->id());
+        $filter->must()->equals($model->getKeyName(), $id->id());
 
         return $this->count($filter) > 0;
     }
@@ -233,11 +227,8 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
     {
         $model = $this->getModelInstance();
 
-        $columns = '*';
         $fields = $pageable->fields();
-        if ($fields) {
-            $columns = $fields->get();
-        }
+        $columns = ($fields) ? $fields->get() : ['*'];
 
         $filter = $pageable->filters();
         if ($filter) {
