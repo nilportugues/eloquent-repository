@@ -1,6 +1,8 @@
 <?php
 
-use NilPortugues\Example\Domain\UserId;
+namespace NilPortugues\Example\Domain;
+
+use DateTimeImmutable;
 use NilPortugues\Foundation\Domain\Model\Repository\Contracts\Identity;
 
 class User implements Identity

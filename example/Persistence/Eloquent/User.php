@@ -20,4 +20,9 @@ use NilPortugues\Foundation\Infrastructure\Model\Repository\Eloquent\IdentityTra
 class User extends Model implements Identity
 {
     use IdentityTrait;
+
+    /**
+     * @var string
+     */
+    protected $table = 'users';
 }

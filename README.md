@@ -3,6 +3,14 @@
 
 Eloquent Repository using *[nilportugues/repository](https://github.com/nilportugues/php-repository)* as foundation.
 
+## Installation
+
+Use [Composer](https://getcomposer.org) to install the package:
+
+```json
+$ composer require nilportugues/eloquent-repository
+```
+
 ## Why?
 
 Using this implementation you can switch it out to test your code without setting up databases.
@@ -15,20 +23,32 @@ Using this implementation you can switch it out to test your code without settin
 
 Doesn't sound handy? Let's think of yet another use case you'll love using this. `Functional tests` and `Unitary tests`.
 
-No database connection will be needed, nor fakes. Using an `InMemoryRepository` or `FileSystemRepository` implementation will make those a breeze to code. And once the tests finish, all data may be destroyed with not worries at all.
-
-
-## Installation
-
-Use [Composer](https://getcomposer.org) to install the package:
-
-```json
-$ composer require nilportugues/eloquent-repository
-```
+No database connection will be needed, nor fakes. Using an `InMemoryRepository` or `FileSystemRepository` implementation will make those a breeze to code. And once the tests finish, all data may be destroyed with no worries at all.
 
 ## Usage
 
-### A Repository for One Eloquent Model
+To set up Eloquent you don't need Laravel or Lumen frameworks at all. This is how you use Eloquent in any project. 
+
+```php
+<?php
+use Illuminate\Database\Capsule\Manager as Capsule;
+
+$capsule = new Capsule();
+$capsule->addConnection(
+    [
+        'driver' => 'sqlite', 
+        'database' => __DIR__.'/database.db',
+        'prefix' => ''
+    ], 
+    'default' //connection name.
+);
+$capsule->bootEloquent();
+$capsule->setAsGlobal();
+```
+
+Now that Eloquent is running, we can use the Repository.
+
+### One Repository for One Eloquent Model
 
 A well defined repository returns one kind of objects that belong to one Business model.
 
@@ -50,7 +70,9 @@ class UserRepository extends EloquentRepository
 
 To be faithful to the repository pattern, using Eloquent Models internally is OK, but Business objects should be returned. 
 
-Therefore, you should translate Eloquent to Business representations and the other way round. The fully implementation should be along the lines:
+Therefore, you should translate Eloquent to Business representations and the other way round. This is represented by `$userAdapter` in the example below.
+
+The fully implementation should be along the lines:
 
 ```php
 <?php
@@ -58,12 +80,14 @@ use NilPortugues\Foundation\Infrastructure\Model\Repository\Eloquent\EloquentRep
 
 class UserRepository extends EloquentRepository 
 {
+    protected $userAdapter;
+    
     /**
-     * @param $userEloquentAdapter
+     * @param $userAdapter
      */
-    public function __construct($userEloquentAdapter)
+    public function __construct($userAdapter)
     {
-        $this->eloquentAdapter = $userEloquentAdapter; 
+        $this->userAdapter = $userAdapter; 
     }
     
     /**
@@ -81,7 +105,7 @@ class UserRepository extends EloquentRepository
     {
         $eloquentModel = parent::find($id, $fields);   
         
-        return $this->eloquentAdapter->fromEloquent($eloquentModel);
+        return $this->userAdapter->fromEloquent($eloquentModel);
     }
     
     /**
@@ -120,7 +144,10 @@ class UserRepository extends EloquentRepository
    {
         $results = [];
         foreach ($eloquentModelArray as $eloquentModel) {
-            $results[] = $this->eloquentAdapter->fromEloquent($eloquentModel);
+            //This is required to handle findAll returning array, not objects.
+            $eloquentModel = (object) $eloquentModel;
+            
+            $results[] = $this->userAdapter->fromEloquent($eloquentModel);
         }
         
         return $results;
@@ -128,11 +155,13 @@ class UserRepository extends EloquentRepository
 }
 ```
 
-### One EloquentRepository for All Eloquent Models (discouraged)
+A sample implementation can be found in the [/example](https://github.com/nilportugues/php-eloquent-repository/tree/master/example) directory.
 
-While **this is not the recommended way**, as a repository should only return one kind of Business objects, this implementation may allow you to go RAD. For instance, this works well with Laravel projects.
+### One EloquentRepository for All Eloquent Models
 
-Bare in mind that your code will be coupled with Eloquent, **this being implementation brings many downsides**, such as **loosing the possibility to have switchable repositories.**
+While **this is not the recommended way**, as a repository should only return one kind of Business objects, this works well with Laravel projects.
+
+While the amount of core is less than the previous example, bare in mind that your code will be coupled with Eloquent.
 
 ```php
 <?php
@@ -163,7 +192,7 @@ class EloquentRepository extends Repository
 }
 ```
 
-### Filtering data
+## Filtering data
 
 Filtering is as simple as using the `Filter` object. For instance, lets retrieve how many users are named `Ken`. 
  
@@ -202,7 +231,7 @@ Filter allow you to use `must()`, `mustNot()` and `should()` methods to set up a
 - `public function beLessThanOrEqual($filterName, $value)`
 - `public function beLessThan($filterName, $value)`
     
-### Sorting data
+## Sorting data
 
 Sorting is straight forward. Create an instance of Sort and pass in the column names and ordering.
 
@@ -219,7 +248,7 @@ $fields = null; //all columns
 $results = $repository->findBy($filter, $sort, $fields);
 ```
 
-### Fields data
+## Fields data
 
 Create a Fields object to fetch only selected columns. If no Fields object is passed, all columns are selected by default.
 
@@ -236,7 +265,7 @@ $fields = new Fields(['name', 'id']);
 $results = $repository->findBy($filter, $sort, $fields);
 ```
 
-### Fetching data
+## Fetching data
 
 Repository allows you to fetch data from the database by using the following methods:
 
