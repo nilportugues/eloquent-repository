@@ -131,7 +131,7 @@ class UserRepository extends EloquentRepository
 
 ### One EloquentRepository for All Eloquent Models
 
-While **this is not the recommended way**, as a repository should only return one kind of Business objects, this implementation may allow you to go RAD.
+While **this is not the recommended way**, as a repository should only return one kind of Business objects, this implementation may allow you to go RAD. For instance, this works well with Laravel projects.
 
 Bare in mind that your code will be coupled with Eloquent, **this being implementation brings many downsides**, such as **loosing the possibility to have switchable repositories.**
 
