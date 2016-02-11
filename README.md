@@ -136,9 +136,9 @@ Bare in mind that your code will be coupled with Eloquent, **this being implemen
 
 ```php
 <?php
-use NilPortugues\Foundation\Infrastructure\Model\Repository\Eloquent\EloquentRepository as AbstractRepository;
+use NilPortugues\Foundation\Infrastructure\Model\Repository\Eloquent\EloquentRepository as Repository;
 
-class EloquentRepository extends AbstractRepository
+class EloquentRepository extends Repository
 {
     /**
      * @var string
