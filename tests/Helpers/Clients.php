@@ -1,6 +1,6 @@
 <?php
 
-namespace NilPortugues\Tests\Foundation;
+namespace NilPortugues\Tests\Foundation\Helpers;
 
 use Illuminate\Database\Eloquent\Model;
 use NilPortugues\Foundation\Domain\Model\Repository\Contracts\Identity;
@@ -15,11 +15,11 @@ class Clients extends Model implements Identity
      */
     protected $table = 'clients';
 
-    /*
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    /*public function orderDates()
+    public function orderDates()
     {
         return $this->hasMany(ClientOrders::class);
-    }*/
+    }
 }

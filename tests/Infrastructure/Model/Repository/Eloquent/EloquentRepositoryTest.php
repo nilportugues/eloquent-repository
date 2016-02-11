@@ -1,13 +1,18 @@
 <?php
 
-namespace NilPortugues\Tests\Foundation;
+namespace NilPortugues\Tests\Foundation\Infrastructure\Model\Repository\Eloquent;
 
 use DateTime;
+use Exception;
 use NilPortugues\Foundation\Domain\Model\Repository\Filter;
 use NilPortugues\Foundation\Domain\Model\Repository\Order;
 use NilPortugues\Foundation\Domain\Model\Repository\Page;
 use NilPortugues\Foundation\Domain\Model\Repository\Pageable;
 use NilPortugues\Foundation\Domain\Model\Repository\Sort;
+use NilPortugues\Tests\Foundation\Database;
+use NilPortugues\Tests\Foundation\Helpers\ClientId;
+use NilPortugues\Tests\Foundation\Helpers\Clients;
+use NilPortugues\Tests\Foundation\Helpers\ClientsRepository;
 
 class EloquentRepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -29,8 +34,8 @@ class EloquentRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function testItCanFind()
     {
+        /* @var Clients $client */
         $id = new ClientId(1);
-        /** @var Clients $client */
         $client = $this->repository->find($id);
 
         $this->assertInstanceOf(Clients::class, $client);
@@ -47,7 +52,10 @@ class EloquentRepositoryTest extends \PHPUnit_Framework_TestCase
 
     public function testFindAllWithPageable()
     {
-        $pageable = new Pageable(2, 2, new Sort(['name'], new Order('DESC')));
+        $filter = new Filter();
+        $filter->must()->greaterThanOrEqual('id', 1);
+
+        $pageable = new Pageable(2, 2, new Sort(['name'], new Order('DESC')), $filter);
         $result = $this->repository->findAll($pageable);
 
         $this->assertInstanceOf(Page::class, $result);
@@ -142,6 +150,13 @@ class EloquentRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNotNull($this->repository->find(new ClientId(5)));
         $this->assertNotNull($this->repository->find(new ClientId(6)));
+    }
+
+    public function testAddAllRollbacks()
+    {
+        $this->setExpectedException(Exception::class);
+        $clients = ['a', 'b'];
+        $this->repository->addAll($clients);
     }
 
     public function testFind()

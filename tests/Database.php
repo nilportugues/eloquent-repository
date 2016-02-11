@@ -5,6 +5,8 @@ namespace NilPortugues\Tests\Foundation;
 use DateTime;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use NilPortugues\Tests\Foundation\Helpers\ClientOrders;
+use NilPortugues\Tests\Foundation\Helpers\Clients;
 
 class Database
 {

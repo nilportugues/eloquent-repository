@@ -1,17 +1,13 @@
 <?php
 
-namespace NilPortugues\Tests\Foundation;
+namespace NilPortugues\Tests\Foundation\Helpers;
 
 use NilPortugues\Foundation\Infrastructure\Model\Repository\Eloquent\EloquentRepository;
 
 class ClientOrdersRepository extends EloquentRepository
 {
     /**
-     * Must return the Eloquent Model Fully Qualified Class Name as a string.
-     *
-     * eg: return App\Model\User::class
-     *
-     * @return string
+     * {@inheritdoc}
      */
     protected function modelClassName()
     {
