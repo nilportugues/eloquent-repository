@@ -33,7 +33,7 @@
     }
   },
   "suggest": {
-    "nilportugues/repository-cache": "1.0.*",
-    "illuminate/database": "^5.2"
+    "nilportugues/filesystem-repository": "FileSystem repository implementation.",
+    "nilportugues/repository-cache": "Cache any nilportugues/repository implementation."
   }
 }
