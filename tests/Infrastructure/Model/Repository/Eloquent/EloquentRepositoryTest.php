@@ -174,6 +174,7 @@ class EloquentRepositoryTest extends \PHPUnit_Framework_TestCase
     public function testFindBy()
     {
         $sort = new Sort(['name'], new Order('ASC'));
+
         $filter = new Filter();
         $filter->must()->contain('name', 'Ken');
 

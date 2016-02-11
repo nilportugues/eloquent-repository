@@ -1,7 +1,6 @@
 # Eloquent Repository
 [![Build Status](https://travis-ci.org/nilportugues/php-eloquent-repository.svg)](https://travis-ci.org/nilportugues/php-eloquent-repository) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nilportugues/php-eloquent-repository/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/nilportugues/php-eloquent-repository/?branch=master) [![SensioLabsInsight](https://insight.sensiolabs.com/projects/8d362f15-8385-40c0-a7a6-672c857352b4/mini.png)](https://insight.sensiolabs.com/projects/8d362f15-8385-40c0-a7a6-672c857352b4) [![Latest Stable Version](https://poser.pugx.org/nilportugues/eloquent-repository/v/stable)](https://packagist.org/packages/nilportugues/eloquent-repository) [![Total Downloads](https://poser.pugx.org/nilportugues/eloquent-repository/downloads)](https://packagist.org/packages/nilportugues/eloquent-repository) [![License](https://poser.pugx.org/nilportugues/eloquent-repository/license)](https://packagist.org/packages/nilportugues/eloquent-repository)
 
-
 Eloquent Repository using *[nilportugues/repository](https://github.com/nilportugues/php-repository)* as foundation.
 
 ## Why?
@@ -129,7 +128,7 @@ class UserRepository extends EloquentRepository
 }
 ```
 
-### One EloquentRepository for All Eloquent Models
+### One EloquentRepository for All Eloquent Models (discouraged)
 
 While **this is not the recommended way**, as a repository should only return one kind of Business objects, this implementation may allow you to go RAD. For instance, this works well with Laravel projects.
 
@@ -164,12 +163,118 @@ class EloquentRepository extends AbstractRepository
 }
 ```
 
+### Filtering data
 
-### Data manipulation
+Filtering is as simple as using the `Filter` object. For instance, lets retrieve how many users are named `Ken`. 
+ 
+```php
+<?php
+use NilPortugues\Foundation\Domain\Model\Repository\Filter;
 
-#### Filtering
+$repository = new UserRepository();
 
-#### Sorting
+$filter = new Filter();
+$filter->must()->contain('name', 'Ken');
 
-#### Fields
+echo $repository->count($filter);
+```
 
+Notice how the key `name` matches the database column `name` in the `users` table.
+
+**Available options**
+
+Filter allow you to use `must()`, `mustNot()` and `should()` methods to set up a fine-grained search. These provide a fluent interface with the following methods available: 
+    
+- `public function notEmpty($filterName)`
+- `public function hasEmpty($filterName)`
+- `public function startsWith($filterName, $value)`
+- `public function endsWith($filterName, $value)`
+- `public function equal($filterName, $value)`
+- `public function notEqual($filterName, $value)`
+- `public function includeGroup($filterName, array $value)`
+- `public function notIncludeGroup($filterName, array $value)`
+- `public function range($filterName, $firstValue, $secondValue)`
+- `public function notRange($filterName, $firstValue, $secondValue)`
+- `public function notContain($filterName, $value)`
+- `public function contain($filterName, $value)`
+- `public function beGreaterThanOrEqual($filterName, $value)`
+- `public function beGreaterThan($filterName, $value)`
+- `public function beLessThanOrEqual($filterName, $value)`
+- `public function beLessThan($filterName, $value)`
+    
+### Sorting data
+
+Sorting is straight forward. Create an instance of Sort and pass in the column names and ordering.
+
+```php
+<?php
+use NilPortugues\Foundation\Domain\Model\Repository\Sort;
+
+$repository = new UserRepository();
+
+$filter = null; //all records
+$sort = new Sort(['name', 'id'], new Order('ASC', 'DESC'));
+$fields = null; //all columns
+
+$results = $repository->findBy($filter, $sort, $fields);
+```
+
+### Fields data
+
+Create a Fields object to fetch only selected columns. If no Fields object is passed, all columns are selected by default.
+
+```php
+<?php
+use NilPortugues\Foundation\Domain\Model\Repository\Contracts\Fields;
+
+$repository = new UserRepository();
+
+$filter = null; //all records
+$sort = null; //existing order
+$fields = new Fields(['name', 'id']);
+
+$results = $repository->findBy($filter, $sort, $fields);
+```
+
+### Fetching data
+
+Repository allows you to fetch data from the database by using the following methods:
+
+- `public function findAll(Pageable $pageable = null)`
+- `public function find(Identity $id, Fields $fields = null)`
+- `public function findBy(Filter $filter = null, Sort $sort = null, Fields $fields = null)`
+
+
+## Quality
+
+To run the PHPUnit tests at the command line, go to the tests directory and issue phpunit.
+
+This library attempts to comply with [PSR-1](http://www.php-fig.org/psr/psr-1/), [PSR-2](http://www.php-fig.org/psr/psr-2/), [PSR-4](http://www.php-fig.org/psr/psr-4/).
+
+If you notice compliance oversights, please send a patch via [Pull Request](https://github.com/nilportugues/php-eloquent-repository/pulls).
+
+
+## Contribute
+
+Contributions to the package are always welcome!
+
+* Report any bugs or issues you find on the [issue tracker](https://github.com/nilportugues/php-eloquent-repository/issues/new).
+* You can grab the source code at the package's [Git Repository](https://github.com/nilportugues/php-eloquent-repository).
+
+
+## Support
+
+Get in touch with me using one of the following means:
+
+ - Emailing me at <contact@nilportugues.com>
+ - Opening an [Issue](https://github.com/nilportugues/php-eloquent-repository/issues/new)
+
+
+## Authors
+
+* [Nil Portugués Calderó](http://nilportugues.com)
+* [The Community Contributors](https://github.com/nilportugues/php-eloquent-repository/graphs/contributors)
+
+
+## License
+The code base is licensed under the [MIT license](LICENSE).
