@@ -131,13 +131,13 @@ class UserRepository extends EloquentRepository
 
 While **this is not the recommended way**, as a repository should only return one kind of Business objects, this implementation may allow you to go RAD.
 
-**Bare in mind that your code will be coupled with Eloquent, this being implementation brings many downsides, such as loosing the possibility to have switchable repositories.**
+Bare in mind that your code will be coupled with Eloquent, **this being implementation brings many downsides**, such as **loosing the possibility to have switchable repositories.**
 
 ```php
 <?php
-use NilPortugues\Foundation\Infrastructure\Model\Repository\Eloquent\EloquentRepository as AbstractEloquentRepository;
+use NilPortugues\Foundation\Infrastructure\Model\Repository\Eloquent\EloquentRepository as AbstractRepository;
 
-class EloquentRepository extends AbstractEloquentRepository
+class EloquentRepository extends AbstractRepository
 {
     /**
      * @var string
