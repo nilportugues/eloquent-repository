@@ -9,6 +9,10 @@ use NilPortugues\Foundation\Domain\Model\Repository\Sort;
 include_once '../vendor/autoload.php';
 
 //------------------------------------------------------------
+// Create database if does not exist + establish connection
+//------------------------------------------------------------
+
+//------------------------------------------------------------
 // getUserAction
 //------------------------------------------------------------
 $repository = new UserRepository();

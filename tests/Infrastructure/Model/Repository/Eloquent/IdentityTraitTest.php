@@ -18,7 +18,6 @@ class IdentityTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testItCanGetId()
     {
-
         $this->assertEquals(1, $this->id());
     }
 

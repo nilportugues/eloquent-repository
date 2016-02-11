@@ -2,15 +2,7 @@
 
 Eloquent Repository using *[nilportugues/repository](https://github.com/nilportugues/php-repository)* as foundation.
 
-## Installation
-
-Use [Composer](https://getcomposer.org) to install the package:
-
-```json
-$ composer require nilportugues/eloquent-repository
-```
-
-## Why bother?
+## Why?
 
 Using this implementation you can switch it out to test your code without setting up databases.
 
@@ -23,3 +15,158 @@ Using this implementation you can switch it out to test your code without settin
 Doesn't sound handy? Let's think of yet another use case you'll love using this. `Functional tests` and `Unitary tests`.
 
 No database connection will be needed, nor fakes. Using an `InMemoryRepository` or `FileSystemRepository` implementation will make those a breeze to code. And once the tests finish, all data may be destroyed with not worries at all.
+
+
+## Installation
+
+Use [Composer](https://getcomposer.org) to install the package:
+
+```json
+$ composer require nilportugues/eloquent-repository
+```
+
+## Usage
+
+### A Repository for One Eloquent Model
+
+A well defined repository returns one kind of objects that belong to one Business model.
+
+```php
+<?php
+use NilPortugues\Foundation\Infrastructure\Model\Repository\Eloquent\EloquentRepository;
+
+class UserRepository extends EloquentRepository 
+{
+    /**
+     * {@inheritdoc}
+     */
+    protected function modelClassName()
+    {
+        return User::class;
+    }
+}
+```
+
+To be faithful to the repository pattern, using Eloquent Models internally is OK, but Business objects should be returned. 
+
+Therefore, you should translate Eloquent to Business representations and the other way round. The fully implementation should be along the lines:
+
+```php
+<?php
+use NilPortugues\Foundation\Infrastructure\Model\Repository\Eloquent\EloquentRepository;
+
+class UserRepository extends EloquentRepository 
+{
+    /**
+     * @param $userEloquentAdapter
+     */
+    public function __construct($userEloquentAdapter)
+    {
+        $this->eloquentAdapter = $userEloquentAdapter; 
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    protected function modelClassName()
+    {
+        return User::class;
+    }
+    
+    /**
+     * {@inheritdoc}
+     */    
+    public function find(Identity $id, Fields $fields = null)
+    {
+        $eloquentModel = parent::find($id, $fields);   
+        
+        return $this->eloquentAdapter->fromEloquent($eloquentModel);
+    }
+    
+    /**
+     * {@inheritdoc}
+     */    
+    public function findBy(Filter $filter = null, Sort $sort = null, Fields $fields = null)
+    {
+        $eloquentModelArray = parent::findBy($filter, $sort, $fields);   
+        
+        return $this->fromEloquentArray($eloquentModelArray);
+    }       
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function findAll(Pageable $pageable = null)
+    {
+        $page = parent::findAll($pageable);
+        
+        return new Page(
+            $this->fromEloquentArray($page->content()),
+            $page->totalElements(),
+            $page->pageNumber(),
+            $page->totalPages(),
+            $page->sortings(),
+            $page->filters(),
+            $page->fields()
+        );
+    } 
+
+   /**
+    * @param array $eloquentModelArray
+    * @return array
+    */
+   protected function fromEloquentArray(array $eloquentModelArray)
+   {
+        $results = [];
+        foreach ($eloquentModelArray as $eloquentModel) {
+            $results[] = $this->eloquentAdapter->fromEloquent($eloquentModel);
+        }
+        
+        return $results;
+   } 
+}
+```
+
+### One EloquentRepository for All Eloquent Models
+
+While **this is not the recommended way**, as a repository should only return one kind of Business objects, this implementation may allow you to go RAD.
+
+**Bare in mind that your code will be coupled with Eloquent, this being implementation brings many downsides, such as loosing the possibility to have switchable repositories.**
+
+```php
+<?php
+use NilPortugues\Foundation\Infrastructure\Model\Repository\Eloquent\EloquentRepository as AbstractEloquentRepository;
+
+class EloquentRepository extends AbstractEloquentRepository
+{
+    /**
+     * @var string
+     */
+    protected $modelClass;
+    
+    /**
+     * @param string $modelClass
+     */
+    public function __construct($modelClass)
+    {
+        $this->modelClass = (string) $modelClass;
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    protected function modelClassName()
+    {
+        return $this->modelClass;
+    }
+}
+```
+
+
+### Data manipulation
+
+#### Filtering
+
+#### Sorting
+
+#### Fields

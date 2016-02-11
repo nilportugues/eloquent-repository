@@ -18,11 +18,7 @@ use NilPortugues\Foundation\Infrastructure\Model\Repository\Eloquent\EloquentRep
 class UserRepository extends EloquentRepository
 {
     /**
-     * Must return the Eloquent Model Fully Qualified Class Name as a string.
-     *
-     * eg: return User::class
-     *
-     * @return string
+     * {@inheritdoc}
      */
     protected function modelClassName()
     {

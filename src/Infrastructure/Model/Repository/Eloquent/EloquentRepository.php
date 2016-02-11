@@ -109,7 +109,7 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
         $model = $this->getModelInstance();
 
         $filter = new DomainFilter();
-        $filter->must()->equals($model->getKeyName(), $id->id());
+        $filter->must()->equal($model->getKeyName(), $id->id());
 
         return $this->count($filter) > 0;
     }
@@ -232,15 +232,15 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
 
         if ($pageable) {
             $fields = $pageable->fields();
-            $columns = ($fields) ? $fields->get() : ['*'];
+            $columns = (!$fields->isNull()) ? $fields->get() : ['*'];
 
             $filter = $pageable->filters();
-            if ($filter) {
+            if (!$filter->isNull()) {
                 EloquentFilter::filter($query, $filter);
             }
 
             $sort = $pageable->sortings();
-            if ($sort) {
+            if (!$sort->isNull()) {
                 EloquentSorter::sort($query, $sort);
             }
 
