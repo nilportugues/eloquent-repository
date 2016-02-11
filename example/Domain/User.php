@@ -21,8 +21,8 @@ class User implements Identity
     /**
      * User constructor.
      *
-     * @param UserId $id
-     * @param string $name
+     * @param UserId            $id
+     * @param string            $name
      * @param DateTimeImmutable $registrationDate
      */
     public function __construct(UserId $id, $name, DateTimeImmutable $registrationDate)

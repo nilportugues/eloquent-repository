@@ -172,3 +172,4 @@ class EloquentRepository extends AbstractRepository
 #### Sorting
 
 #### Fields
+
