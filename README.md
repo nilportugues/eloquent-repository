@@ -17,6 +17,7 @@ Using this implementation you can switch it out to test your code without settin
 
 **Drivers:**
 
+- `composer require nilportugues/repository-cache` for caching.
 - `composer require nilportugues/repository` for an InMemoryRepository implementation.
 - `composer require nilportugues/filesystem-repository` for a FileSystemRepository.
 - `composer require nilportugues/doctrine-repository` for an Doctrine implementation if you change or mind.
