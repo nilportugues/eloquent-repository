@@ -162,7 +162,7 @@ A sample implementation can be found in the [/example](https://github.com/nilpor
 
 While **this is not the recommended way**, as a repository should only return one kind of Business objects, this works well with Laravel projects.
 
-While the amount of core is less than the previous example, bare in mind that your code will be coupled with Eloquent.
+While the amount of code is less than the previous example, bare in mind that your code will be coupled with Eloquent.
 
 ```php
 <?php
