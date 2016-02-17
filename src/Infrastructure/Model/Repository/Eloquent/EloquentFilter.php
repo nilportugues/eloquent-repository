@@ -92,6 +92,9 @@ class EloquentFilter
                             case BaseFilter::GROUP:
                                 $where->getQuery()->whereIn($key, $value, $boolean);
                                 break;
+                            case BaseFilter::NOT_GROUP:
+                                $where->getQuery()->whereNotIn($key, $value, $boolean);
+                                break;
                         }
                         break;
                     }
