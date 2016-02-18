@@ -11,19 +11,25 @@ Use [Composer](https://getcomposer.org) to install the package:
 $ composer require nilportugues/eloquent-repository
 ```
 
-## Why?
+## Why? Drivers and Multiple Implementations!
 
 Using this implementation you can switch it out to test your code without setting up databases.
-
-**Drivers:**
-
-- `composer require nilportugues/repository` for an InMemoryRepository implementation.
-- `composer require nilportugues/filesystem-repository` for a FileSystemRepository.
-- `composer require nilportugues/doctrine-repository` for an Doctrine implementation if you change or mind.
 
 Doesn't sound handy? Let's think of yet another use case you'll love using this. `Functional tests` and `Unitary tests`.
 
 No database connection will be needed, nor fakes. Using an `InMemoryRepository` or `FileSystemRepository` implementation will make those a breeze to code. And once the tests finish, all data may be destroyed with no worries at all.
+
+**Available drivers:**
+
+Also, if you feel like changing the repository implementation, no logic changes would be needed, as there are a set of drivers for you to use out of the box:
+
+- `composer require nilportugues/repository-cache` for [caching](https://github.com/nilportugues/php-repository-cache).
+- `composer require nilportugues/repository` for an [InMemoryRepository implementation](https://github.com/nilportugues/php-repository).
+- `composer require nilportugues/filesystem-repository` for a [FileSystemRepository implementation](https://github.com/nilportugues/php-filesystem-repository).
+- `composer require nilportugues/doctrine-repository` for a [SQL Doctrine implementation](https://github.com/nilportugues/php-doctrine-repository).
+- `composer require nilportugues/eloquent-mongodb-repository` for a [MongoDB Eloquent implementation](https://github.com/nilportugues/php-eloquent-mongodb-repository).
+
+
 
 ## Usage
 

@@ -19,7 +19,7 @@ class Database
         Capsule::schema()->dropIfExists('clients');
         Capsule::schema()->create('clients', function (Blueprint $table) {
             $table->string('name', 255);
-            $table->dateTime('date');
+            $table->date('date');
             $table->integer('totalOrders');
             $table->float('totalEarnings');
             $table->integer('id');

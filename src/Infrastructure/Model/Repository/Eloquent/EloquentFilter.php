@@ -81,23 +81,29 @@ class EloquentFilter
         foreach ($filters as $filterName => $valuePair) {
             foreach ($valuePair as $key => $value) {
                 if (is_array($value) && count($value) > 0) {
-                    if (count($value) > 1) {
+                    $value = array_values($value);
+                    if (count($value[0]) > 1) {
                         switch ($filterName) {
                             case BaseFilter::RANGES:
-                                $where->getQuery()->whereBetween($key, [$value[0], $value[1]], $boolean);
+                                $where->whereBetween($key, [$value[0][0], $value[0][1]], $boolean);
                                 break;
                             case BaseFilter::NOT_RANGES:
-                                $where->getQuery()->whereNotBetween($key, [$value[0], $value[1]], $boolean);
-                                break;
-                            case BaseFilter::GROUP:
-                                $where->getQuery()->whereIn($key, $value, $boolean);
+                                $where->whereNotBetween($key, [$value[0][0], $value[0][1]], $boolean);
                                 break;
                         }
-                        break;
+                    } else {
+                        switch ($filterName) {
+                            case BaseFilter::GROUP:
+                                $where->whereIn($key, $value, $boolean);
+                                break;
+                            case BaseFilter::NOT_GROUP:
+                                $where->whereNotIn($key, $value, $boolean);
+                                break;
+                        }
                     }
-                    $value = array_shift($value);
                 }
 
+                $value = array_shift($value);
                 switch ($filterName) {
                     case BaseFilter::GREATER_THAN_OR_EQUAL:
                         $where->where($key, '>=', $value, $boolean);
@@ -118,10 +124,10 @@ class EloquentFilter
                         $where->where($key, 'NOT LIKE', '%'.$value.'%', $boolean);
                         break;
                     case BaseFilter::STARTS_WITH:
-                        $where->where($key, 'LIKE', '%'.$value, $boolean);
+                        $where->where($key, 'LIKE', $value.'%', $boolean);
                         break;
                     case BaseFilter::ENDS_WITH:
-                        $where->where($key, 'LIKE', $value.'%', $boolean);
+                        $where->where($key, 'LIKE', '%'.$value, $boolean);
                         break;
                     case BaseFilter::EQUALS:
                         $where->where($key, '=', $value, $boolean);
