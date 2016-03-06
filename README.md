@@ -1,5 +1,6 @@
 # Eloquent Repository
 [![Build Status](https://travis-ci.org/PHPRepository/php-eloquent-repository.svg)](https://travis-ci.org/PHPRepository/php-eloquent-repository) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nilportugues/php-eloquent-repository/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/nilportugues/php-eloquent-repository/?branch=master) [![SensioLabsInsight](https://insight.sensiolabs.com/projects/8d362f15-8385-40c0-a7a6-672c857352b4/mini.png)](https://insight.sensiolabs.com/projects/8d362f15-8385-40c0-a7a6-672c857352b4) [![Latest Stable Version](https://poser.pugx.org/nilportugues/eloquent-repository/v/stable)](https://packagist.org/packages/nilportugues/eloquent-repository) [![Total Downloads](https://poser.pugx.org/nilportugues/eloquent-repository/downloads)](https://packagist.org/packages/nilportugues/eloquent-repository) [![License](https://poser.pugx.org/nilportugues/eloquent-repository/license)](https://packagist.org/packages/nilportugues/eloquent-repository)
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://paypal.me/nilportugues)
 
 Eloquent Repository using *[nilportugues/repository](https://github.com/nilportugues/php-repository)* as foundation.
 
