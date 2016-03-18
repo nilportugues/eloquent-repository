@@ -169,19 +169,12 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
      */
     public function addAll(array $values)
     {
-        $model = $this->getModelInstance();
-
-        try {
-            $model->getConnection()->beginTransaction();
-            foreach ($values as $value) {
-                $this->guard($value);
-                $value->save();
-            }
-            $model->getConnection()->commit();
-        } catch (\Exception $e) {
-            $model->getConnection()->rollback();
-            throw $e;
+        foreach ($values as $value) {
+            $this->guard($value);
+            $value->save();
         }
+
+        return $values;
     }
 
     /**
@@ -234,6 +227,11 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
             $fields = $pageable->fields();
             $columns = (!$fields->isNull()) ? $fields->get() : ['*'];
 
+            if (count($distinctFields = $pageable->distinctFields()->get()) > 0) {
+                $query->getQuery()->distinct();
+                $columns = $distinctFields;
+            }
+
             $filter = $pageable->filters();
             if (!$filter->isNull()) {
                 EloquentFilter::filter($query, $filter);
@@ -258,5 +256,54 @@ abstract class EloquentRepository implements ReadRepository, WriteRepository, Pa
             1,
             1
         );
+    }
+
+    /**
+     * Returns all instances of the type meeting $distinctFields values.
+     *
+     * @param Fields      $distinctFields
+     * @param Filter|null $filter
+     * @param Sort|null   $sort
+     *
+     * @return array
+     */
+    public function findByDistinct(Fields $distinctFields, Filter $filter = null, Sort $sort = null)
+    {
+        $model = $this->getModelInstance();
+        $query = $model->query();
+
+        $columns = (count($fields = $distinctFields->get()) > 0) ? $fields : ['*'];
+
+        if ($filter) {
+            EloquentFilter::filter($query, $filter);
+        }
+
+        if ($sort) {
+            EloquentSorter::sort($query, $sort);
+        }
+
+        return $query->getQuery()->distinct()->get($columns);
+    }
+
+    /**
+     * Repository data is added or removed as a whole block.
+     * Must work or fail and rollback any persisted/erased data.
+     *
+     * @param callable $transaction
+     *
+     * @throws \Exception
+     */
+    public function transactional(callable $transaction)
+    {
+        $model = $this->getModelInstance();
+
+        try {
+            $model->getConnection()->beginTransaction();
+            $transaction();
+            $model->getConnection()->commit();
+        } catch (\Exception $e) {
+            $model->getConnection()->rollback();
+            throw $e;
+        }
     }
 }

@@ -103,6 +103,7 @@ class EloquentFilter
                     }
                 }
 
+                $value = (array) $value;
                 $value = array_shift($value);
                 switch ($filterName) {
                     case BaseFilter::GREATER_THAN_OR_EQUAL:
