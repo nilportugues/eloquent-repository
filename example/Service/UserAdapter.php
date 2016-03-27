@@ -9,11 +9,10 @@ use NilPortugues\Example\Domain\UserId;
 class UserAdapter
 {
     /**
-     * @param $model
-     *
+     * @param \stdClass $model
      * @return User
      */
-    public function fromEloquent($model)
+    public function fromEloquent(\stdClass $model)
     {
         return new User(
             new UserId($model->id),

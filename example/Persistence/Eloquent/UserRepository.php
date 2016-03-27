@@ -54,7 +54,7 @@ class UserRepository extends EloquentRepository
         /** @var Model $eloquentModel */
         $eloquentModel = parent::find($id, $fields);
 
-        return $this->userAdapter->fromEloquent($eloquentModel);
+        return $this->userAdapter->fromEloquent((object) $eloquentModel->toArray());
     }
 
     /**
