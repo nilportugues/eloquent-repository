@@ -18,16 +18,16 @@ trait IdentityTrait
     /**
      * @return string
      */
-    public function id()
+    public function __toString()
     {
-        return (string) $this->id;
+        return $this->id();
     }
 
     /**
      * @return string
      */
-    public function __toString()
+    public function id()
     {
-        return $this->id();
+        return (string) $this->id;
     }
 }
