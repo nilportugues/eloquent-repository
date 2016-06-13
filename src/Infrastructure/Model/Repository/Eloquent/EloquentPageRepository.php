@@ -40,11 +40,14 @@ class EloquentPageRepository extends BaseEloquentRepository implements PageRepos
                 EloquentSorter::sort($query, $sort);
             }
 
+            $pageSize = $pageable->pageSize();
+            $pageSize = ($pageSize>0) ? $pageSize : 1;
+
             return new ResultPage(
                 $query->paginate($pageable->pageSize(), $columns, 'page', $pageable->pageNumber())->items(),
                 $query->paginate()->total(),
                 $pageable->pageNumber(),
-                ceil($query->paginate()->total() / $pageable->pageSize())
+                ceil($query->paginate()->total() / $pageSize)
             );
         }
 
